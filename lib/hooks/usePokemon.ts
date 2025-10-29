@@ -17,7 +17,10 @@ export const usePokemon = () => {
     try {
       setLoading(true);
       setError(null);
-      const { data } = await pokeApi.get('/pokemon?limit=20&offset=0');
+
+      // CARGAR 150 POKÉMON (incluye a Pikachu #25)
+      const { data } = await pokeApi.get('/pokemon?limit=150&offset=0');
+
       const results = await Promise.all(
         data.results.map(async (p: { url: string }) => {
           const res = await pokeApi.get(p.url);
@@ -30,6 +33,7 @@ export const usePokemon = () => {
           };
         })
       );
+
       setPokemon(results);
     } catch (err) {
       setError('Error al cargar Pokémon');
