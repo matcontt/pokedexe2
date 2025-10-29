@@ -36,7 +36,6 @@ export const usePokemon = () => {
         })
       );
 
-      // FILTRAR DUPLICADOS POR ID
       setPokemon(prev => {
         const existingIds = new Set(prev.map(p => p.id));
         const newPokemon = results.filter(p => !existingIds.has(p.id));
@@ -46,7 +45,6 @@ export const usePokemon = () => {
       setOffset(prev => prev + limit);
     } catch (err: any) {
       setError(err.message || 'Error al cargar');
-      console.error('Error:', err);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -58,9 +56,7 @@ export const usePokemon = () => {
   }, []);
 
   const loadMore = useCallback(() => {
-    if (!loadingMore && !loading) {
-      loadPokemon(true);
-    }
+    if (!loadingMore && !loading) loadPokemon(true);
   }, [loadingMore, loading]);
 
   const reload = useCallback(() => {

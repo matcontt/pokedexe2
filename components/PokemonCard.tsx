@@ -1,8 +1,9 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Link } from 'expo-router';
 import { Pokemon } from '../lib/hooks/usePokemon';
-import { useFavorites } from '../lib/hooks/useFavorites';
+import { useFavorites } from '../lib/context/FavoritesContext';
 import { Heart } from 'lucide-react-native';
+import { useRef } from 'react'; // ← AÑADE ESTO
 
 const typeColors: Record<string, string> = {
   normal: 'bg-gray-400',
@@ -27,26 +28,36 @@ const typeColors: Record<string, string> = {
 
 export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const bgColor = typeColors[pokemon.types[0]] || typeColors.normal;
   const favorite = isFavorite(pokemon.id);
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.timing(scale, { toValue: 1.3, duration: 100, useNativeDriver: true }),
+      Animated.timing(scale, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start();
+    toggleFavorite(pokemon.id);
+  };
+
+  const bgColor = typeColors[pokemon.types[0]] || typeColors.normal;
 
   return (
-    <View className={`m-2 rounded-xl overflow-hidden shadow-md ${bgColor} w-[48%]`}>
+    <View className={`m-2 rounded-2xl overflow-hidden shadow-lg ${bgColor} w-[48%]`}>
       <Link href={`/pokemon/${pokemon.id}`} asChild>
-        <View className="p-3 items-center">
+        <View className="p-4 items-center">
           <Image
             source={{ uri: pokemon.image }}
-            className="w-20 h-20"
+            className="w-24 h-24"
             resizeMode="contain"
           />
-          <Text className="text-white font-bold text-sm capitalize mt-1">
+          <Text className="text-white font-bold text-base capitalize mt-2">
             {pokemon.name}
           </Text>
-          <View className="flex-row mt-1 flex-wrap justify-center">
+          <View className="flex-row mt-1">
             {pokemon.types.map((type) => (
               <Text
                 key={type}
-                className="text-xs text-white px-2 py-0.5 bg-black bg-opacity-30 rounded-full mx-0.5"
+                className="text-xs text-white px-3 py-1 bg-black bg-opacity-40 rounded-full mx-0.5"
               >
                 {type}
               </Text>
@@ -55,17 +66,18 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
         </View>
       </Link>
 
-      {/* BOTÓN FAVORITO */}
-      <TouchableOpacity
-        onPress={() => toggleFavorite(pokemon.id)}
-        className="absolute top-2 right-2 p-1 bg-white bg-opacity-30 rounded-full"
-      >
-        <Heart
-          size={18}
-          color={favorite ? '#ef4444' : '#ffffff'}
-          fill={favorite ? '#ef4444' : 'none'}
-        />
-      </TouchableOpacity>
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <TouchableOpacity
+          onPress={handlePress}
+          className="absolute top-3 right-3 p-2 bg-white bg-opacity-80 rounded-full shadow"
+        >
+          <Heart
+            size={20}
+            color={favorite ? '#ef4444' : '#6b7280'}
+            fill={favorite ? '#ef4444' : 'none'}
+          />
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 }

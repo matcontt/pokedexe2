@@ -1,13 +1,12 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { usePokemon } from '../../lib/hooks/usePokemon';
-import { useFavorites } from '../../lib/hooks/useFavorites';
+import { useFavorites } from '../../lib/context/FavoritesContext';
 import PokemonCard from '../../components/PokemonCard';
 
 export default function Home() {
   const { pokemon, loading, loadingMore, error, loadMore, reload } = usePokemon();
   const { favorites } = useFavorites();
 
-  // Filtrar favoritos
   const favoritePokemon = pokemon.filter(p => favorites.includes(p.id));
 
   if (loading && pokemon.length === 0) {
@@ -29,7 +28,6 @@ export default function Home() {
 
   return (
     <View className="flex-1 bg-gray-100 dark:bg-gray-900">
-      {/* HEADER */}
       <View className="bg-red-600 dark:bg-red-800 p-6 items-center">
         <Text className="text-white text-3xl font-bold">Pokédex</Text>
       </View>
@@ -53,7 +51,6 @@ export default function Home() {
         refreshing={loading}
         onRefresh={reload}
 
-        // SECCIÓN DE FAVORITOS (OPCIONAL)
         ListHeaderComponent={
           favoritePokemon.length > 0 ? (
             <View className="mb-4">
