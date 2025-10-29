@@ -1,6 +1,6 @@
 import { View, Text, Image } from 'react-native';
 import { Link } from 'expo-router';
-import { Pokemon } from '../lib/hooks/usePokemon'; // Importa la interfaz
+import { Pokemon } from '../lib/hooks/usePokemon';
 
 const typeColors: Record<string, string> = {
   normal: 'bg-gray-400',

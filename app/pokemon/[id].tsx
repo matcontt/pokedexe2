@@ -5,7 +5,6 @@ import pokeApi from '../../lib/pokeApi';
 
 export default function PokemonDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
-
   const [pokemon, setPokemon] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 

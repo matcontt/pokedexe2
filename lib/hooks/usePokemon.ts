@@ -18,7 +18,6 @@ export const usePokemon = () => {
       setLoading(true);
       setError(null);
 
-      // CARGAR 150 POKÉMON (incluye a Pikachu #25)
       const { data } = await pokeApi.get('/pokemon?limit=150&offset=0');
 
       const results = await Promise.all(

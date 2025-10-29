@@ -5,10 +5,9 @@ import PokemonCard from '../components/PokemonCard';
 import TextField from '../components/TextField';
 
 export default function Search() {
-  const { pokemon, loading } = usePokemon();
+  const { pokemon, loading, reload } = usePokemon();
   const [search, setSearch] = useState('');
 
-  // BÚSQUEDA POR NOMBRE O TIPO (insensible a mayúsculas)
   const filteredPokemon = pokemon.filter((p) => {
     const query = search.toLowerCase().trim();
     if (!query) return true;
@@ -21,7 +20,6 @@ export default function Search() {
 
   return (
     <View className="flex-1 bg-gray-100">
-      {/* INPUT CON ÍCONO */}
       <View className="p-4 bg-white shadow-sm">
         <TextField
           placeholder="Buscar por nombre o tipo..."
@@ -31,7 +29,6 @@ export default function Search() {
         />
       </View>
 
-      {/* LISTA FILTRADA */}
       <FlatList
         data={filteredPokemon}
         keyExtractor={(item) => item.id.toString()}
@@ -39,6 +36,8 @@ export default function Search() {
         columnWrapperStyle={{ justifyContent: 'space-between' }}
         renderItem={({ item }) => <PokemonCard pokemon={item} />}
         contentContainerClassName="p-2"
+        refreshing={loading}
+        onRefresh={reload}
         ListEmptyComponent={
           !loading && search ? (
             <View className="flex-1 items-center mt-10">
