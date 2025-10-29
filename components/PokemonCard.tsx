@@ -1,6 +1,8 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
 import { Pokemon } from '../lib/hooks/usePokemon';
+import { useFavorites } from '../lib/hooks/useFavorites';
+import { Heart } from 'lucide-react-native';
 
 const typeColors: Record<string, string> = {
   normal: 'bg-gray-400',
@@ -24,11 +26,13 @@ const typeColors: Record<string, string> = {
 };
 
 export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
+  const { isFavorite, toggleFavorite } = useFavorites();
   const bgColor = typeColors[pokemon.types[0]] || typeColors.normal;
+  const favorite = isFavorite(pokemon.id);
 
   return (
-    <Link href={`/pokemon/${pokemon.id}`} asChild>
-      <View className={`m-2 rounded-xl overflow-hidden shadow-md ${bgColor} w-[48%]`}>
+    <View className={`m-2 rounded-xl overflow-hidden shadow-md ${bgColor} w-[48%]`}>
+      <Link href={`/pokemon/${pokemon.id}`} asChild>
         <View className="p-3 items-center">
           <Image
             source={{ uri: pokemon.image }}
@@ -49,7 +53,19 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
             ))}
           </View>
         </View>
-      </View>
-    </Link>
+      </Link>
+
+      {/* BOTÓN FAVORITO */}
+      <TouchableOpacity
+        onPress={() => toggleFavorite(pokemon.id)}
+        className="absolute top-2 right-2 p-1 bg-white bg-opacity-30 rounded-full"
+      >
+        <Heart
+          size={18}
+          color={favorite ? '#ef4444' : '#ffffff'}
+          fill={favorite ? '#ef4444' : 'none'}
+        />
+      </TouchableOpacity>
+    </View>
   );
 }
