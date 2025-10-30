@@ -3,27 +3,27 @@ import { Link } from 'expo-router';
 import { Pokemon } from '../lib/hooks/usePokemon';
 import { useFavorites } from '../lib/context/FavoritesContext';
 import { Heart } from 'lucide-react-native';
-import { useRef } from 'react'; // ← AÑADE ESTO
+import { useRef } from 'react';
 
 const typeColors: Record<string, string> = {
-  normal: 'bg-gray-400',
-  fire: 'bg-red-500',
-  water: 'bg-blue-500',
-  grass: 'bg-green-500',
-  electric: 'bg-yellow-400',
-  ice: 'bg-cyan-300',
-  fighting: 'bg-red-700',
-  poison: 'bg-purple-500',
-  ground: 'bg-yellow-600',
-  flying: 'bg-indigo-400',
-  psychic: 'bg-pink-500',
-  bug: 'bg-lime-500',
-  rock: 'bg-yellow-800',
-  ghost: 'bg-purple-700',
-  dragon: 'bg-indigo-700',
-  dark: 'bg-gray-800',
-  steel: 'bg-gray-500',
-  fairy: 'bg-pink-300',
+  normal: '#A8A878',
+  fire: '#F08030',
+  water: '#6890F0',
+  grass: '#78C850',
+  electric: '#F8D030',
+  ice: '#98D8D8',
+  fighting: '#C03028',
+  poison: '#A040A0',
+  ground: '#E0C068',
+  flying: '#A890F0',
+  psychic: '#F85888',
+  bug: '#A8B820',
+  rock: '#B8A038',
+  ghost: '#705898',
+  dragon: '#7038F8',
+  dark: '#705848',
+  steel: '#B8B8D0',
+  fairy: '#EE99AC',
 };
 
 export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
@@ -31,7 +31,9 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
   const favorite = isFavorite(pokemon.id);
   const scale = useRef(new Animated.Value(1)).current;
 
-  const handlePress = () => {
+  const handlePress = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
     Animated.sequence([
       Animated.timing(scale, { toValue: 1.3, duration: 100, useNativeDriver: true }),
       Animated.timing(scale, { toValue: 1, duration: 100, useNativeDriver: true }),
@@ -42,42 +44,60 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
   const bgColor = typeColors[pokemon.types[0]] || typeColors.normal;
 
   return (
-    <View className={`m-2 rounded-2xl overflow-hidden shadow-lg ${bgColor} w-[48%]`}>
-      <Link href={`/pokemon/${pokemon.id}`} asChild>
-        <View className="p-4 items-center">
+    <Link href={`/pokemon/${pokemon.id}`} asChild>
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        className="m-1.5 rounded-2xl overflow-hidden shadow-lg w-[46%]"
+        style={{ backgroundColor: bgColor }}
+      >
+        <View className="p-3 items-center relative">
+          {/* Número del Pokémon */}
+          <Text className="absolute top-2 left-3 text-white/60 text-xs font-bold">
+            #{String(pokemon.id).padStart(3, '0')}
+          </Text>
+
+          {/* Botón de favorito */}
+          <Animated.View 
+            className="absolute top-1 right-1 z-10"
+            style={{ transform: [{ scale }] }}
+          >
+            <TouchableOpacity
+              onPress={handlePress}
+              className="p-2 bg-white/90 rounded-full"
+            >
+              <Heart
+                size={18}
+                color={favorite ? '#ef4444' : '#6b7280'}
+                fill={favorite ? '#ef4444' : 'none'}
+              />
+            </TouchableOpacity>
+          </Animated.View>
+
+          {/* Imagen del Pokémon */}
           <Image
             source={{ uri: pokemon.image }}
-            className="w-24 h-24"
+            className="w-24 h-24 mt-5"
             resizeMode="contain"
           />
+
+          {/* Nombre del Pokémon */}
           <Text className="text-white font-bold text-base capitalize mt-2">
             {pokemon.name}
           </Text>
-          <View className="flex-row mt-1">
+
+          {/* Tipos */}
+          <View className="flex-row mt-1.5 flex-wrap justify-center">
             {pokemon.types.map((type) => (
               <Text
                 key={type}
-                className="text-xs text-white px-3 py-1 bg-black bg-opacity-40 rounded-full mx-0.5"
+                className="text-xs text-white px-2.5 py-1 bg-black/20 rounded-full mx-0.5 font-semibold capitalize"
               >
                 {type}
               </Text>
             ))}
           </View>
         </View>
-      </Link>
-
-      <Animated.View style={{ transform: [{ scale }] }}>
-        <TouchableOpacity
-          onPress={handlePress}
-          className="absolute top-3 right-3 p-2 bg-white bg-opacity-80 rounded-full shadow"
-        >
-          <Heart
-            size={20}
-            color={favorite ? '#ef4444' : '#6b7280'}
-            fill={favorite ? '#ef4444' : 'none'}
-          />
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+      </TouchableOpacity>
+    </Link>
   );
 }
